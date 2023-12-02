@@ -129,9 +129,16 @@ export default function Home() {
   };
 
   const handleDeleteSelected = () => {
-    setUsers(users.filter((user) => !selectedRows.includes(user.id)));
+    setUsers((prevUsers) =>
+      prevUsers.filter((user) => !selectedRows.includes(user.id))
+    );
     setSelectedRows([]);
     setSelectAll(false);
+  };
+
+  const handleSelectAllRows = () => {
+    setSelectAll(!selectAll);
+    setSelectedRows(selectAll ? [] : visibleUsers.map((user) => user.id));
   };
 
   return (
@@ -176,7 +183,7 @@ export default function Home() {
                 <input
                   type="checkbox"
                   checked={selectAll}
-                  onChange={() => setSelectAll(!selectAll)}
+                  onChange={handleSelectAllRows}
                 />
               </th>
               <th className="border border-gray-300 p-2">ID</th>
