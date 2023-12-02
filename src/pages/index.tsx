@@ -19,13 +19,18 @@ export default function Home() {
   const [selectAll, setSelectAll] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchColumn, setSearchColumn] = useState('name');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     fetch('/api/data')
       .then((response) => response.json())
-      .then((data: User[]) => {setUsers(data.map((user) => ({ ...user, isEditing: false })))
-      setOriginalData(data.map((user) => ({ ...user, isEditing: false })))})
-      .catch((error) => console.error('Error fetching data:', error));
+      .then((data: User[]) => {
+        setUsers(data.map((user) => ({ ...user, isEditing: false })));
+        setOriginalData(data.map((user) => ({ ...user, isEditing: false })));
+      })
+      .catch((error) => console.error('Error fetching data:', error))
+      .finally(() => setLoading(false));
   }, []);
 
   const totalPages = Math.ceil(users.length / pageSize);
@@ -154,120 +159,124 @@ export default function Home() {
         >
           Search
         </button>
-          <button
-            className="bg-gray-200 px-4 py-2 rounded hover:shadow-lg"
-            onClick={handleClearSearch}
-          >
-            Clear Search
-          </button>
+        <button
+          className="bg-gray-200 px-4 py-2 rounded hover:shadow-lg"
+          onClick={handleClearSearch}
+        >
+          Clear Search
+        </button>
       </div>
-      <table className="table-auto w-full border-collapse border border-gray-300 shadow-lg">
-      <thead>
-        <tr className="bg-violet-400 text-white">
-          <th className="border border-black-300 p-2">
-            <input
-              type="checkbox"
-              checked={selectAll}
-              onChange={() => setSelectAll(!selectAll)}
-            />
-          </th>
-          <th className="border border-gray-300 p-2">ID</th>
-          <th className="border border-gray-300 p-2">Name</th>
-          <th className="border border-gray-300 p-2">Email</th>
-          <th className="border border-gray-300 p-2">Role</th>
-          <th className="border border-gray-300 p-2">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {visibleUsers.map((user) => (
-          <tr key={user.id} className="text-center">
-            <td className="border border-gray-300 p-2">
-              <input
-                type="checkbox"
-                checked={selectedRows.includes(user.id)}
-                onChange={() => handleSelectRow(user.id)}
-              />
-            </td>
-            <td className="border border-gray-300 p-2">{user.id}</td>
-            <td className="border border-gray-300 p-2">
-              {user.isEditing ? (
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <table className="table-auto w-full border-collapse border border-gray-300 shadow-lg">
+          <thead>
+            <tr className="bg-violet-400 text-white">
+              <th className="border border-black-300 p-2">
                 <input
-                  type="text"
-                  value={user.name}
-                  onChange={(e) => handleEditChange(e.target.value, user.id, 'name')}
-                  className="border border-gray-300 p-1 rounded"
+                  type="checkbox"
+                  checked={selectAll}
+                  onChange={() => setSelectAll(!selectAll)}
                 />
-              ) : (
-                <div onClick={() => handleEdit(user.id)} className="cursor-pointer">
-                  {user.name}
-                </div>
-              )}
-            </td>
-            <td className="border border-gray-300 p-2">
-              {user.isEditing ? (
-                <input
-                  type="text"
-                  value={user.email}
-                  onChange={(e) => handleEditChange(e.target.value, user.id, 'email')}
-                  className="border border-gray-300 p-1 rounded"
-                />
-              ) : (
-                <div onClick={() => handleEdit(user.id)} className="cursor-pointer">
-                  {user.email}
-                </div>
-              )}
-            </td>
-            <td className="border border-gray-300 p-2">
-              {user.isEditing ? (
-                <input
-                  type="text"
-                  value={user.role}
-                  onChange={(e) => handleEditChange(e.target.value, user.id, 'role')}
-                  className="border border-gray-300 p-1 rounded"
-                />
-              ) : (
-                <div onClick={() => handleEdit(user.id)} className="cursor-pointer">
-                  {user.role}
-                </div>
-              )}
-            </td>
-            <td className="border border-gray-300 p-2">
-              {user.isEditing ? (
-                <>
-                  <button
-                    className="bg-green-500 text-white px-2 py-1 mr-2 rounded hover:bg-green-700"
-                    onClick={() => handleSave(user.id)}
-                  >
-                    Save
-                  </button>
-                  <button
-                    className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-600"
-                    onClick={() => handleCancel(user.id)}
-                  >
-                    Cancel
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    className="bg-violet-400 text-white px-2 py-1 mr-2 rounded hover:bg-violet-600"
-                    onClick={() => handleEdit(user.id)}
-                  >
-                    ✏️
-                  </button>
-                  <button
-                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-700"
-                    onClick={() => handleDelete(user.id)}
-                  >
-                    🗑️
-                  </button>
-                </>
-              )}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+              </th>
+              <th className="border border-gray-300 p-2">ID</th>
+              <th className="border border-gray-300 p-2">Name</th>
+              <th className="border border-gray-300 p-2">Email</th>
+              <th className="border border-gray-300 p-2">Role</th>
+              <th className="border border-gray-300 p-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {visibleUsers.map((user) => (
+              <tr key={user.id} className="text-center">
+                <td className="border border-gray-300 p-2">
+                  <input
+                    type="checkbox"
+                    checked={selectedRows.includes(user.id)}
+                    onChange={() => handleSelectRow(user.id)}
+                  />
+                </td>
+                <td className="border border-gray-300 p-2">{user.id}</td>
+                <td className="border border-gray-300 p-2">
+                  {user.isEditing ? (
+                    <input
+                      type="text"
+                      value={user.name}
+                      onChange={(e) => handleEditChange(e.target.value, user.id, 'name')}
+                      className="border border-gray-300 p-1 rounded"
+                    />
+                  ) : (
+                    <div onClick={() => handleEdit(user.id)} className="cursor-pointer">
+                      {user.name}
+                    </div>
+                  )}
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {user.isEditing ? (
+                    <input
+                      type="text"
+                      value={user.email}
+                      onChange={(e) => handleEditChange(e.target.value, user.id, 'email')}
+                      className="border border-gray-300 p-1 rounded"
+                    />
+                  ) : (
+                    <div onClick={() => handleEdit(user.id)} className="cursor-pointer">
+                      {user.email}
+                    </div>
+                  )}
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {user.isEditing ? (
+                    <input
+                      type="text"
+                      value={user.role}
+                      onChange={(e) => handleEditChange(e.target.value, user.id, 'role')}
+                      className="border border-gray-300 p-1 rounded"
+                    />
+                  ) : (
+                    <div onClick={() => handleEdit(user.id)} className="cursor-pointer">
+                      {user.role}
+                    </div>
+                  )}
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {user.isEditing ? (
+                    <>
+                      <button
+                        className="bg-green-500 text-white px-2 py-1 mr-2 rounded hover:bg-green-700"
+                        onClick={() => handleSave(user.id)}
+                      >
+                        Save
+                      </button>
+                      <button
+                        className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-600"
+                        onClick={() => handleCancel(user.id)}
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        className="bg-violet-400 text-white px-2 py-1 mr-2 rounded hover:bg-violet-600"
+                        onClick={() => handleEdit(user.id)}
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-700"
+                        onClick={() => handleDelete(user.id)}
+                      >
+                        🗑️
+                      </button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
       <div className="mt-4 flex justify-between items-center">
         <div>
           <button
@@ -297,7 +306,10 @@ export default function Home() {
           </button>
         </div>
         <div>
-          <span className="text-lg">{`Page ${currentPage} of ${totalPages}`}</span>
+          <span className="text-gray-400 text-lg">
+            {selectedRows.length > 0 && `${selectedRows.length} row(s) out of ${users.length} selected`}
+          </span>
+          <span className="ml-2 text-lg">{`Page ${currentPage} of ${totalPages}`}</span>
         </div>
       </div>
       <button
