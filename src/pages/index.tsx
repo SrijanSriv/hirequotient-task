@@ -188,8 +188,10 @@ export default function Home() {
           </thead>
           <tbody>
             {visibleUsers.map((user) => (
-              <tr key={user.id} className="text-center">
-                <td className="border border-gray-300 p-2">
+              <tr key={user.id} className={`text-center ${
+                selectedRows.includes(user.id) ? 'bg-slate-200' : ''
+              }`}>
+                <td className={`border border-gray-300 p-2`}>
                   <input
                     type="checkbox"
                     checked={selectedRows.includes(user.id)}
@@ -290,7 +292,7 @@ export default function Home() {
             <button
               key={index}
               className={`page-${index} bg-slate-200 px-2 py-1 mr-2 rounded hover:bg-slate-400 ${
-                currentPage === index + 1 ? 'bg-slate-600' : ''
+                currentPage === index + 1 ? 'bg-slate-400' : ''
               }`}
               onClick={() => handlePageChange(index + 1)}
             >
