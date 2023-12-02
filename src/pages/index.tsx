@@ -147,7 +147,7 @@ export default function Home() {
         </select>
         <input
           type="text"
-          placeholder="Search..."
+          placeholder="Search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -167,7 +167,7 @@ export default function Home() {
         </button>
       </div>
       {loading ? (
-        <p>Loading...</p>
+        <p>Fetching Data...</p>
       ) : (
         <table className="table-auto w-full border-collapse border border-gray-300 shadow-lg">
           <thead>
@@ -289,8 +289,8 @@ export default function Home() {
           {Array.from({ length: totalPages }).map((_, index) => (
             <button
               key={index}
-              className={`bg-slate-200 px-2 py-1 mr-2 rounded hover:bg-slate-400 ${
-                currentPage === index + 1 ? 'bg-gray-800' : ''
+              className={`page-${index} bg-slate-200 px-2 py-1 mr-2 rounded hover:bg-slate-400 ${
+                currentPage === index + 1 ? 'bg-slate-600' : ''
               }`}
               onClick={() => handlePageChange(index + 1)}
             >
